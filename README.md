@@ -26,3 +26,6 @@ Available with ..
 ## Absenteeism at work
 Martiniano, A. & Ferreira, R. (2012). Absenteeism at work [Dataset]. UCI Machine Learning Repository. https://doi.org/10.24432/C5X882. <br>
 Available with `ucimlrepo.fetch_ucirepo`. 
+
+## References
+[1] Hailin Li, Multivariate time series clustering based on common principal component analysis, Neurocomputing, Volume 349, 2019, Pages 239-247, ISSN 0925-2312, https://doi.org/10.1016/j.neucom.2019.03.060.
