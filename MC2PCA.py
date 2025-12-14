@@ -1,110 +1,90 @@
 import numpy as np
 
 class MC2PCA:
-    def __init__(self, p, tol, max_iter):
+    def __init__(self, p, tol=1e-7, max_iter=100):
         self.p = p
         self.tol = tol
         self.max_iter = max_iter
 
     def _normalize_all(self, X):
         normalized = []
-        for i in X:
-            X_norm = i - i.mean(axis=0)    
-            normalized.append(X_norm)
+        for Xi in X:
+            Xi_c = Xi - Xi.mean(axis=0)
+            normalized.append(Xi_c)
         return normalized
-    
+
     def _compute_covariances(self, X):
         covs = []
-        for i in X:
-            sigma = np.cov(i.T)
-            covs.append(sigma)
+        for Xi in X:
+            covs.append(np.cov(Xi.T, bias=True))
         return covs
 
     def _CPCA(self, covs_cluster):
-        cov_mean = np.mean(covs_cluster, axis=0)
-        _, S, Vt = np.linalg.svd(cov_mean)
-        S = S**2   
-        var_ratio = S[:self.p].sum() / S.sum()
-        return Vt[:self.p].T, var_ratio
-
+        mean_cov = np.mean(covs_cluster, axis=0)
+        _, val_propre, vt = np.linalg.svd(mean_cov)
+        val_propre = val_propre**2             
+        var_ratio = np.sum(val_propre[:self.p]) / np.sum(val_propre)
+        return vt[:self.p, :].T, var_ratio
 
     def _compute_CPCA_for_all_clusters(self, covs, clusters):
-        subspaces = []
-        variances = []
+        S = []
+        info = []
+        for idx in clusters:
+            if len(idx) > 0:
+                Sk, vk = self._CPCA([covs[i] for i in idx])
+                S.append(Sk)
+                info.append(vk)
+            else:
+                S.append(None)
+                info.append(0.0)
+        return S, info
 
-        for idx_list in clusters:
-            if len(idx_list) == 0:
-                subspaces.append(None)
-                variances.append(0.0)
-                continue
+    def _assign_clusters(self, X, S):
+        n = len(X)
+        K = len(S)
+        Error = np.zeros((n, K))
 
-            covs_cluster = [covs[j] for j in idx_list]
+        for k in range(K):
+            if S[k] is not None:
+                sst = S[k] @ S[k].T
+                for i in range(n):
+                    time_series = X[i]                 
+                    Y = time_series @ sst
+                    err = np.linalg.norm(time_series - Y, axis=1)
+                    Error[i, k] = np.mean(err)
+            else:
+                Error[:, k] = np.inf
 
-            S_k, var_k = self._CPCA(covs_cluster)
-
-            subspaces.append(S_k)
-            variances.append(var_k)
-
-        return subspaces, variances
-    
-    def _assign_clusters(self, series, subspaces):
-        n = len(series)
-        K = len(subspaces)
-        error_matrix = np.zeros((n, K))
-
-        for i, Xi in enumerate(series):
-            # Xi : T x d
-            for k in range(K):
-                S_k = subspaces[k]
-                if S_k is None:
-                    error_matrix[i,k] = np.inf
-                    continue
-                
-                P_k = S_k @ S_k.T
-                Xi_hat = Xi @ P_k
-
-                # Erreur dimension par dimension (comme GitHub)
-                per_dim_errors = np.linalg.norm(Xi - Xi_hat, axis=0)
-                error_matrix[i,k] = per_dim_errors.mean()
-
-        assignments = np.argmin(error_matrix, axis=1)
-        min_errors = error_matrix[np.arange(n), assignments]
-
-        return assignments, np.sum(min_errors), np.mean(min_errors), error_matrix
-
-
-    
+        I = np.argmin(Error, axis=1)
+        v = Error[np.arange(n), I]
+        return I, v, Error
 
     def fit(self, series_list, K):
-        normalized = self._normalize_all(series_list)
-        covs = self._compute_covariances(normalized)
+        X = self._normalize_all(series_list)
+        covs = self._compute_covariances(X)
 
-        n = len(series_list)
+        n = len(X)
+        idx = np.array_split(np.arange(n), K)
+        idx = [list(c) for c in idx]
 
-        clusters = np.array_split(np.arange(n), K)
-        clusters = [c.tolist() for c in clusters]
+        S, _ = self._compute_CPCA_for_all_clusters(covs, idx)
 
-        prev_error = np.inf
-        errors = []
+        E = [np.inf]
 
-        for i in range(self.max_iter):
-            subspaces, variances = self._compute_CPCA_for_all_clusters(covs, clusters)
+        for _ in range(self.max_iter):
+            I, v, _ = self._assign_clusters(X, S)
+            E.append(np.sum(v) / len(v))
 
-            assignments, total_error, mean_error, _ = self._assign_clusters(normalized, subspaces)
-            errors.append(mean_error)          
-
-
-            if abs(prev_error - total_error) < self.tol:
+            if abs(E[-2] - E[-1]) < self.tol:
                 break
 
-            prev_error = total_error
-            clusters = [np.where(assignments == k)[0].tolist() for k in range(K)]
+            idx = [np.where(I == k)[0].tolist() for k in range(K)]
+            S, info = self._compute_CPCA_for_all_clusters(covs, idx)
 
-
-        self.assignments = assignments
-        self.clusters = clusters
-        self.subspaces = subspaces
-        self.variances = variances
-        self.errors = errors
+        self.assignments = I
+        self.clusters = idx
+        self.subspaces = S
+        self.variances = info
+        self.errors = E
 
         return self
