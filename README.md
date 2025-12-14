@@ -12,33 +12,10 @@ The repository is organized as follows:
 ## Results
 Here are some results, the rest can be found in `experiments` folder.
 
-<style>
-/* Responsive 2x2 image grid */
-.results-grid {
-	display: grid;
-	grid-template-columns: repeat(2, 1fr);
-	gap: 12px;
-	align-items: start;
-}
-.results-grid img {
-	width: 100%;
-	height: auto;
-	display: block;
-	border: 1px solid #e6e6e6;
-}
-@media (max-width: 600px) {
-	.results-grid {
-		gr%id-template-columns: 1fr;
-	}
-}
-</style>
-
-<section class="results-grid" aria-label="Results figures">
-	<img src="figures/missing_values.png" alt="Missing values results" />
-	<img src="figures/additive_noise.png" alt="Additive noise results" />
-	<img src="figures/convergence_init.png" alt="Convergence init results" />
-	<img src="figures/precision_p.png" alt="Precision p results" />
-</section>
+<img src="figures/missing_values.png" width="50%" alt="Missing values results" />
+<img src="figures/additive_noise.png" width="50%" alt="Additive noise results" />
+<img src="figures/convergence_init.png"  width="50%"alt="Convergence init results" />
+<img src="figures/precision_p.png" width="50%" alt="Precision p results" />
 
 ## Development
 Install the repository dependencies with `pip install -r requirements.txt`.  
