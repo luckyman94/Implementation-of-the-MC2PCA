@@ -12,10 +12,9 @@ The repository is organized as follows:
 ## Results
 Here are some results, the rest can be found in `experiments` folder.
 
-<img src="figures/missing_values.png" width="50%" alt="Missing values results" />
-<img src="figures/additive_noise.png" width="50%" alt="Additive noise results" />
-<img src="figures/convergence_init.png"  width="50%"alt="Convergence init results" />
-<img src="figures/precision_p.png" width="50%" alt="Precision p results" />
+<img src="figures/missing_values.png" width="40%" alt="Missing values"/> <img src="figures/additive_noise.png" width="40%" alt="Additive noise"/>
+
+<img src="figures/convergence_init.png"  width="40%" alt="Convergence init"/> <img src="figures/precision_p.png" width="40%" alt="Precision p results"/>
 
 ## Development
 Install the repository dependencies with `pip install -r requirements.txt`.  
