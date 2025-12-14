@@ -48,7 +48,6 @@ class ClusteringMetrics:
                 f"p={r['p']} | "
                 f"ARI={r['ARI']:.3f} | "
                 f"NMI={r['NMI']:.3f} | "
-                f"Purity={r['Purity']:.3f} | "
                 f"Precision={r['Precision']:.3f} | "
                 f"Recall={r['Recall']:.3f}"
             )
@@ -58,7 +57,7 @@ class ClusteringMetrics:
         ps = [r["p"] for r in self.results]
 
         plt.figure(figsize=(7,5))
-        for metric in ["ARI", "NMI", "Purity"]:
+        for metric in ["ARI", "NMI", "Precision"]:
             values = [r[metric] for r in self.results]
             plt.plot(ps, values, marker="o", label=metric)
 
@@ -74,10 +73,10 @@ class ClusteringMetrics:
         import pandas as pd
 
         df = pd.DataFrame(self.results)
-        grouped = df.groupby("p")[["ARI", "NMI", "Purity"]].agg(["mean", "std"])
+        grouped = df.groupby("p")[["ARI", "NMI", "Precision"]].agg(["mean", "std"])
 
         plt.figure(figsize=(7,5))
-        for metric in ["ARI", "NMI", "Purity"]:
+        for metric in ["ARI", "NMI", "Precision"]:
             mean = grouped[(metric, "mean")]
             std = grouped[(metric, "std")]
             plt.errorbar(mean.index, mean, yerr=std, marker="o", label=metric)
