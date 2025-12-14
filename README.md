@@ -1,6 +1,6 @@
 # Implementation-of-the-MC2PCA
 
-This repository contains an implementation of **MC2PCA** algorithm[1] along with evaluation examples on the Japanese Vowels dataset, the Spoken Arabic Digits dataset and the Absenteeism at work dataset. 
+This repository contains an implementation of **MC2PCA** algorithm[1] along with evaluation examples on the Japanese Vowels dataset, the Spoken Arabic Digits dataset and the Basic Motion dataset. 
 
 The repository is organized as follows:
 
@@ -21,7 +21,7 @@ Available with `sktime.datasets.load_japanese_vowels`
 
 ## Spoken Arabic Digits
 Bedda, M. & Hammami, N. (2008). Spoken Arabic Digit [Dataset]. UCI Machine Learning Repository. https://doi.org/10.24432/C52C9Q. <br>
-Available with ..
+Available at this (link)[https://archive.ics.uci.edu/dataset/195/spoken+arabic+digit]
 
 ## Absenteeism at work
 Martiniano, A. & Ferreira, R. (2012). Absenteeism at work [Dataset]. UCI Machine Learning Repository. https://doi.org/10.24432/C5X882. <br>
